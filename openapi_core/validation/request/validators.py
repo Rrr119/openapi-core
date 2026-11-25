@@ -4,6 +4,7 @@ import warnings
 from typing import Any
 from typing import Dict
 from typing import Iterator
+from typing import List
 from typing import Optional
 
 from jsonschema_path import SchemaPath
@@ -32,6 +33,7 @@ from openapi_core.protocols import Request
 from openapi_core.protocols import WebhookRequest
 from openapi_core.security import security_provider_factory
 from openapi_core.security.exceptions import SecurityProviderError
+from openapi_core.security.exceptions import SecuritySchemeNotFound
 from openapi_core.security.factories import SecurityProviderFactory
 from openapi_core.templating.paths.exceptions import PathError
 from openapi_core.templating.paths.types import PathFinderType
@@ -237,28 +239,49 @@ class BaseRequestValidator(BaseValidator):
         schemes = []
         for security_requirement in security:
             try:
-                scheme_names = list(security_requirement.str_keys())
-                schemes.append(scheme_names)
-                return {
-                    scheme_name: self._get_security_value(
-                        parameters, scheme_name
-                    )
-                    for scheme_name in scheme_names
-                }
-            except SecurityProviderError:
+                schemes.append(list(security_requirement.str_keys()))
+                return self._get_security_values(
+                    parameters, security_requirement
+                )
+            except (SecurityProviderError, SecuritySchemeNotFound):
                 continue
 
         raise SecurityNotFound(schemes)
 
+    def _get_security_values(
+        self,
+        parameters: RequestParameters,
+        security_requirement: SchemaPath,
+    ) -> Dict[str, Any]:
+        return {
+            scheme_name: self._get_security_value(
+                parameters,
+                scheme_name,
+                required_scopes=self._get_required_scopes(
+                    security_requirement, scheme_name
+                ),
+            )
+            for scheme_name in security_requirement.str_keys()
+        }
+
+    def _get_required_scopes(
+        self, security_requirement: SchemaPath, scheme_name: str
+    ) -> List[str]:
+        scopes = security_requirement / scheme_name
+        return [scope.read_str() for scope in scopes]
+
     def _get_security_value(
-        self, parameters: RequestParameters, scheme_name: str
+        self,
+        parameters: RequestParameters,
+        scheme_name: str,
+        required_scopes: Optional[List[str]] = None,
     ) -> Any:
         security_schemes = self.spec / "components#securitySchemes"
         if scheme_name not in security_schemes:
-            return
+            raise SecuritySchemeNotFound(scheme_name)
         scheme = security_schemes[scheme_name]
         security_provider = self.security_provider_factory.create(scheme)
-        return security_provider(parameters)
+        return security_provider(parameters, required_scopes)
 
     @ValidationErrorWrapper(RequestBodyValidationError, InvalidRequestBody)
     def _get_body(

@@ -1,0 +1,17 @@
+{
+  "root": "/home/dev/feedback/uid36827",
+  "B": "/home/dev/feedback/uid36827",
+  "sha": "8c1d6c68a08d87c46182d3aa0961eeb817b39071",
+  "wslDistro": "Ubuntu-26.04",
+  "source": {
+    "owner": "python-openapi",
+    "repo": "openapi-core",
+    "sha": "8c1d6c68a08d87c46182d3aa0961eeb817b39071"
+  },
+  "fork": {
+    "owner": "Rrr119",
+    "repo": "openapi-core",
+    "cloneUrl": "https://github.com/Rrr119/openapi-core.git"
+  },
+  "at": "2026-11-25T03:30:34.379Z"
+}

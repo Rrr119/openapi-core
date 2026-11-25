@@ -1,0 +1,18 @@
+{
+  "uid": "36827",
+  "harness": "Codex CLI",
+  "snapshotUrl": "https://github.com/Rrr119/openapi-core/commit/8c1d6c68a08d87c46182d3aa0961eeb817b39071",
+  "harnessVersion": "codex-cli 0.167.2",
+  "operatingSystem": "Ubuntu 26.04.1 LTS",
+  "operatingSystemCell": [
+    "MacOS/Linux"
+  ],
+  "outputDirectory": "/home/dev/feedback/uid36827",
+  "wslDistro": "Ubuntu-26.04",
+  "B": {
+    "success": false,
+    "canceled": true,
+    "error": "任务已取消",
+    "side": "B"
+  }
+}

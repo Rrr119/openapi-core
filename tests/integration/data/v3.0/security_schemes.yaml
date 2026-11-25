@@ -1,0 +1,87 @@
+openapi: "3.0.0"
+info:
+  title: OpenAPI specification with security schemes
+  version: "0.1"
+security:
+  - api_key: []
+  - oauth2:
+      - write:pets
+      - read:pets
+paths:
+  /public:
+    get:
+      security: []
+      responses:
+        "200":
+          description: Public endpoint without security requirements.
+  /api-key:
+    get:
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: Endpoint protected by an api key.
+  /http-basic:
+    get:
+      security:
+        - basic_auth: []
+      responses:
+        "200":
+          description: Endpoint protected by HTTP basic authentication.
+  /oauth/scoped:
+    get:
+      security:
+        - oauth2:
+            - write:pets
+            - read:pets
+      responses:
+        "200":
+          description: Endpoint protected by an OAuth2 scoped requirement.
+  /oauth/optional:
+    get:
+      security:
+        - oauth2: []
+      responses:
+        "200":
+          description: Endpoint protected by OAuth2 without required scopes.
+  /combined:
+    post:
+      security:
+        - api_key: []
+          oauth2:
+            - write:pets
+      responses:
+        "200":
+          description: Endpoint protected by a combined security requirement.
+  /default:
+    get:
+      responses:
+        "200":
+          description: Endpoint using the root-level security alternatives.
+  /undefined:
+    get:
+      security:
+        - undefined_scheme: []
+      responses:
+        "200":
+          description: Endpoint referencing an undefined security scheme.
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: query
+    basic_auth:
+      type: http
+      scheme: basic
+    oauth2:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://example.com/oauth/authorize
+          scopes:
+            write:pets: modify pets
+            read:pets: read pets
+    openid:
+      type: openIdConnect
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration

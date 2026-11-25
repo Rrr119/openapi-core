@@ -7,15 +7,16 @@ from jsonschema_path import SchemaPath
 from openapi_core.security.providers import ApiKeyProvider
 from openapi_core.security.providers import BaseProvider
 from openapi_core.security.providers import HttpProvider
-from openapi_core.security.providers import UnsupportedProvider
+from openapi_core.security.providers import OAuth2Provider
+from openapi_core.security.providers import OpenIdConnectProvider
 
 
 class SecurityProviderFactory:
     PROVIDERS: Dict[str, Type[BaseProvider]] = {
         "apiKey": ApiKeyProvider,
         "http": HttpProvider,
-        "oauth2": UnsupportedProvider,
-        "openIdConnect": UnsupportedProvider,
+        "oauth2": OAuth2Provider,
+        "openIdConnect": OpenIdConnectProvider,
     }
 
     def create(self, scheme: SchemaPath) -> Any:
